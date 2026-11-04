@@ -72,7 +72,7 @@ def evaluate(scores, qrels):
 
 class BM25F:
     def __init__(self, vectorizer, title_counts, body_counts, title_lengths, body_lengths, idf,
-                 title_weight=3.0, body_weight=1.0, k1=1.2, title_b=0.3, body_b=0.75):
+                 title_weight=2.5, body_weight=1.0, k1=1.2, title_b=0.5, body_b=0.75):
         self.vectorizer = vectorizer
         self.title_counts = title_counts
         self.body_counts = body_counts
@@ -111,21 +111,6 @@ class BM25F:
         numerator = weighted_tf * (self.k1 + 1.0)
         denominator = weighted_tf + self.k1
         return np.sum(self.idf[terms][None, :] * numerator / denominator, axis=1, dtype=np.float32)
-
-    def score_pairs(self, queries, pairs, document_index):
-        grouped = defaultdict(list)
-        for query_id, document_id, position in pairs:
-            index = document_index.get(document_id)
-            if index is not None:
-                grouped[query_id].append((position, index))
-        result = {}
-        for query_id, values in grouped.items():
-            positions = [item[0] for item in values]
-            indices = np.asarray([item[1] for item in values], dtype=np.int32)
-            scores = self.score_indices(queries[query_id], indices)
-            result[query_id] = {pairs_position: float(score) for pairs_position, score in zip(positions, scores)}
-        return result
-
 
 def build_model(data_dir, title_weight, body_weight, k1, title_b, body_b):
     document_ids, _, titles, bodies = read_documents(os.path.join(data_dir, "vkmarco-docs.tsv"))

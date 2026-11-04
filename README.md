@@ -2,6 +2,8 @@
 
 Kaggle: polemi (Polina Roschina)
 
+Публичный `nDCG@10`: `0.60914`. Бейзлайн: `0.60500`.
+
 Решение использует BM25F с отдельными зонами `Title` и `Body`. Частоты терминов нормируются по длине зоны, затем объединяются с весами и подаются в формулу BM25. Параметры выбраны по 1000 обучающим запросам:
 
 ```text
@@ -14,10 +16,15 @@ body_b=0.75
 
 Локальный `nDCG@10` на обучающей выборке: `0.623078`.
 
-Запуск:
+Проверено с Python 3.12. Время работы — около минуты, пиковая память — 2.87 ГБ.
+
+Установка и запуск:
 
 ```bash
-python solution.py --submission_file=submission.csv PATH-TO-DATA
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+./solution.py --submission_file=submission.csv PATH-TO-DATA
 ```
 
 Формат данных — файлы соревнования VK MARCO из Kaggle. Решение не использует внешние данные, машинное обучение, нейросети, эмбеддинги или готовые реализации ранжирования.
