@@ -133,7 +133,7 @@ def build_model(data_dir, title_weight, body_weight, k1, title_b, body_b):
     vectorizer.fit(title + " " + body for title, body in zip(titles, bodies))
     title_counts = vectorizer.transform(titles).tocsr()
     body_counts = vectorizer.transform(bodies).tocsr()
-    document_frequency = np.asarray((title_counts > 0).sum(axis=0) + (body_counts > 0).sum(axis=0)).ravel()
+    document_frequency = np.asarray(((title_counts > 0) + (body_counts > 0)).astype(bool).sum(axis=0)).ravel()
     document_frequency = np.maximum(document_frequency, 1.0)
     document_count = len(document_ids)
     idf = np.log1p((document_count - document_frequency + 0.5) / (document_frequency + 0.5))
@@ -174,7 +174,7 @@ def main():
     test_queries = read_queries(os.path.join(args.data_dir, "vkmarco-doceval-queries.tsv"))
     objects = read_objects(os.path.join(args.data_dir, "objects.csv"))
 
-    model, document_ids = build_model(args.data_dir, title_weight=2.0, body_weight=1.0,
+    model, document_ids = build_model(args.data_dir, title_weight=2.5, body_weight=1.0,
                                       k1=1.2, title_b=0.5, body_b=0.75)
     document_index = {document_id: index for index, document_id in enumerate(document_ids)}
 
